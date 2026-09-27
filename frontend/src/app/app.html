@@ -1,0 +1,21 @@
+Please enter your name and pick the Sectors you are currently involved in.
+<br />
+<br />
+Name:
+<input type="text" />
+<br />
+<br />
+Sectors:
+<select multiple size="5">
+  @for (sector of sectorsWithDepth(); track sector.id) {
+    <option [value]="sector.id">{{ '&nbsp;'.repeat(sector.depth * 4) }}{{ sector.name }}</option>
+  }
+</select>
+
+<br />
+<br />
+<input type="checkbox" /> Agree to terms
+
+<br />
+<br />
+<input type="submit" value="Save" />
