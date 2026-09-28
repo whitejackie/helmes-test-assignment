@@ -12,4 +12,8 @@ export class UsersService {
   submitForm(user: User): Observable<User> {
     return this.http.post<User>('http://localhost:3000/users', user);
   }
+
+  updateForm(id: number, user: User): Observable<User> {
+    return this.http.put<User>(`http://localhost:3000/users/${id}`, user);
+  }
 }

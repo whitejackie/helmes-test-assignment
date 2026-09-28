@@ -1,8 +1,5 @@
+<p>Please enter your name and pick the Sectors you are currently involved in.</p>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <p>Please enter your name and pick the Sectors you are currently involved in.</p>
-
-  <br /><br />
-
   <label for="name">Name: </label>
   <input id="name" type="text" formControlName="name" />
   @if (form.controls.name.invalid && form.controls.name.touched) {
@@ -12,7 +9,6 @@
   <br /><br />
 
   <label for="sectors">Sectors: </label>
-
   <select id="sectors" multiple size="5" formControlName="sectors">
     @for (sector of sectorsWithDepth(); track sector.id) {
       <option [value]="sector.id">{{ '&nbsp;'.repeat(sector.depth * 4) }}{{ sector.name }}</option>

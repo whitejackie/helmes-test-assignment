@@ -82,9 +82,14 @@ export class App {
       agree: raw.agree ?? false,
     };
 
-    this.usersService.submitForm(payload).subscribe({
+    const request = this.currentUserId()
+      ? this.usersService.updateForm(this.currentUserId()!, payload)
+      : this.usersService.submitForm(payload);
+
+    request.subscribe({
       next: (savedUser) => {
-        this.currentUserId.set(savedUser.id);
+        this.currentUserId.set(savedUser.id ?? null);
+        console.log(savedUser);
       },
       error: (err) => {
         console.error(err);
