@@ -1,7 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Sector } from './interfaces/sector';
 import { SectorsService } from './services/sectors.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { UsersService } from './services/users.service';
 
 interface SectorWithDepth extends Sector {
   depth: number;
@@ -9,13 +11,16 @@ interface SectorWithDepth extends Sector {
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
   private sectorsService = inject(SectorsService);
+  private usersService = inject(UsersService);
   private sectors = toSignal(this.sectorsService.getSectors(), { initialValue: [] as Sector[] });
+  private fb = inject(FormBuilder);
+  protected currentUserId = signal<number | null | undefined>(null);
 
   sectorsWithDepth = computed(() => {
     const list = this.sectors();
@@ -55,5 +60,35 @@ export class App {
     }
 
     return result;
+  }
+
+  form = this.fb.group({
+    name: ['', Validators.required],
+    sectors: [[] as number[], Validators.required],
+    agree: [false, Validators.requiredTrue],
+  });
+
+  onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.form.getRawValue();
+
+    const payload = {
+      name: raw.name ?? '',
+      sectors: raw.sectors ?? [],
+      agree: raw.agree ?? false,
+    };
+
+    this.usersService.submitForm(payload).subscribe({
+      next: (savedUser) => {
+        this.currentUserId.set(savedUser.id);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
 }

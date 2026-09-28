@@ -1,21 +1,36 @@
-Please enter your name and pick the Sectors you are currently involved in.
-<br />
-<br />
-Name:
-<input type="text" />
-<br />
-<br />
-Sectors:
-<select multiple size="5">
-  @for (sector of sectorsWithDepth(); track sector.id) {
-    <option [value]="sector.id">{{ '&nbsp;'.repeat(sector.depth * 4) }}{{ sector.name }}</option>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <p>Please enter your name and pick the Sectors you are currently involved in.</p>
+
+  <br /><br />
+
+  <label for="name">Name: </label>
+  <input id="name" type="text" formControlName="name" />
+  @if (form.controls.name.invalid && form.controls.name.touched) {
+    <div class="error">Name is required</div>
   }
-</select>
 
-<br />
-<br />
-<input type="checkbox" /> Agree to terms
+  <br /><br />
 
-<br />
-<br />
-<input type="submit" value="Save" />
+  <label for="sectors">Sectors: </label>
+
+  <select id="sectors" multiple size="5" formControlName="sectors">
+    @for (sector of sectorsWithDepth(); track sector.id) {
+      <option [value]="sector.id">{{ '&nbsp;'.repeat(sector.depth * 4) }}{{ sector.name }}</option>
+    }
+  </select>
+  @if (form.controls.sectors.invalid && form.controls.sectors.touched) {
+    <div class="error">At least one sector must be selected</div>
+  }
+
+  <br /><br />
+
+  <input id="agree" type="checkbox" formControlName="agree" />
+  <label for="agree"> Agree to terms</label>
+  @if (form.controls.agree.invalid && form.controls.agree.touched) {
+    <div class="error">You must agree to terms</div>
+  }
+
+  <br /><br />
+
+  <input type="submit" [value]="currentUserId() ? 'Update' : 'Save'" />
+</form>
