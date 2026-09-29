@@ -29,4 +29,5 @@
   <br /><br />
 
   <input type="submit" [value]="currentUserId() ? 'Update' : 'Save'" />
+  @if (successMessage()) { <div class="success">{{ successMessage() }}</div> }
 </form>

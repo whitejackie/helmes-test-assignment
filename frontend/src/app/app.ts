@@ -20,11 +20,19 @@ export class App {
   private usersService = inject(UsersService);
   private sectors = toSignal(this.sectorsService.getSectors(), { initialValue: [] as Sector[] });
   private fb = inject(FormBuilder);
+
   protected currentUserId = signal<number | null | undefined>(null);
+  protected successMessage = signal<string>('');
 
   sectorsWithDepth = computed(() => {
     const list = this.sectors();
     return this.orderSectors(list);
+  });
+
+  form = this.fb.group({
+    name: ['', Validators.required],
+    sectors: [[] as number[], Validators.required],
+    agree: [false, Validators.requiredTrue],
   });
 
   childrenMap = new Map<number | null, Sector[]>();
@@ -62,12 +70,6 @@ export class App {
     return result;
   }
 
-  form = this.fb.group({
-    name: ['', Validators.required],
-    sectors: [[] as number[], Validators.required],
-    agree: [false, Validators.requiredTrue],
-  });
-
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -88,8 +90,10 @@ export class App {
 
     request.subscribe({
       next: (savedUser) => {
+        const updatedForm = !!this.currentUserId();
+        this.successMessage.set(updatedForm ? 'User updated successfully!' : 'User created successfully!');
         this.currentUserId.set(savedUser.id ?? null);
-        console.log(savedUser);
+        setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (err) => {
         console.error(err);
